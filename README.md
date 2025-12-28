@@ -63,7 +63,7 @@ pub fn main() !void {
 
 ## Building
 
-Requires Zig 0.15.2 or later.
+Requires Zig 0.13.0 or later.
 
 ```bash
 # Build the library

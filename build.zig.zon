@@ -1,5 +1,6 @@
 .{
-    .name = "taskspec",
+    .fingerprint = 0xe2e7f643d2c75f2a,
+    .name = .taskspec,
     .version = "0.1.0",
     .minimum_zig_version = "0.13.0",
     .dependencies = .{},

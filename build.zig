@@ -37,7 +37,7 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
-    example.root_module.addImport("taskspec", &lib.root_module);
+    example.root_module.addImport("taskspec", lib.root_module);
     
     const install_example = b.addInstallArtifact(example, .{});
     const example_step = b.step("example", "Build the example");
@@ -54,7 +54,7 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
-    advanced_example.root_module.addImport("taskspec", &lib.root_module);
+    advanced_example.root_module.addImport("taskspec", lib.root_module);
     
     const install_advanced = b.addInstallArtifact(advanced_example, .{});
     const advanced_step = b.step("advanced", "Build the advanced example");

@@ -217,7 +217,6 @@ pub const Parser = struct {
     }
 
     fn parseDescriptionAndMetadata(self: Parser, task: *Task, content: []const u8) !void {
-        var pos: usize = 0;
         var desc_end: usize = content.len;
 
         // Find the start of the first metadata field
@@ -309,7 +308,7 @@ pub const Parser = struct {
 
         // Try emoji-based fields first
         if (mem.startsWith(u8, str, "📅")) {
-            const value = try self.extractValue(str[3..]);
+            const value = try self.extractValue(str[4..]);
             task.due_date = value;
             consumed.* = 3 + value.len;
             return true;

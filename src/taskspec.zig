@@ -97,24 +97,42 @@ pub const Keyword = enum {
 
 /// A parsed taskspec annotation
 pub const Task = struct {
+    /// The keyword type (TODO, FIXME, etc.), null for Markdown task lists
     keyword: ?Keyword,
+    /// The task description text
     description: []const u8,
+    /// Due date in ISO 8601 format (YYYY-MM-DD or with time)
     due_date: ?[]const u8,
+    /// Scheduled date in ISO 8601 format
     scheduled_date: ?[]const u8,
+    /// Start date in ISO 8601 format
     start_date: ?[]const u8,
+    /// Priority level
     priority: ?Priority,
+    /// Recurrence pattern (e.g., "every week" or RRULE format)
     recurrence: ?[]const u8,
+    /// Unique identifier for the task
     id: ?[]const u8,
+    /// Assignee username
     assignee: ?[]const u8,
+    /// List of tags
     tags: std.ArrayList([]const u8),
+    /// List of project names
     projects: std.ArrayList([]const u8),
+    /// Current status of the task
     status: ?Status,
+    /// Created date in ISO 8601 format
     created_date: ?[]const u8,
+    /// Completed date in ISO 8601 format
     completed_date: ?[]const u8,
+    /// Estimated time/effort (e.g., "2h", "3d")
     estimate: ?[]const u8,
+    /// True if parsed from Markdown task list format (- [ ] or - [x])
     is_markdown_task: bool,
+    /// Custom metadata fields not in the standard specification
     custom_fields: std.StringHashMap([]const u8),
 
+    /// Initialize a new Task with default values
     pub fn init(allocator: Allocator) Task {
         return Task{
             .keyword = null,
@@ -137,6 +155,7 @@ pub const Task = struct {
         };
     }
 
+    /// Free resources allocated by the Task
     pub fn deinit(self: *Task) void {
         self.tags.deinit();
         self.projects.deinit();
@@ -148,11 +167,14 @@ pub const Task = struct {
 pub const Parser = struct {
     allocator: Allocator,
 
+    /// Initialize a new Parser with the given allocator
     pub fn init(allocator: Allocator) Parser {
         return Parser{ .allocator = allocator };
     }
 
     /// Parse a single line containing a taskspec annotation
+    /// Returns a Task if the line contains a valid taskspec annotation, null otherwise
+    /// Caller is responsible for calling deinit() on the returned Task
     pub fn parseLine(self: Parser, line: []const u8) !?Task {
         var task = Task.init(self.allocator);
         errdefer task.deinit();
@@ -648,4 +670,19 @@ test "priority from string variations" {
     try std.testing.expectEqual(Priority.highest, Priority.fromString("1").?);
     try std.testing.expectEqual(Priority.medium, Priority.fromString("normal").?);
     try std.testing.expectEqual(Priority.medium, Priority.fromString("3").?);
+}
+
+test "parse with escaped characters" {
+    const allocator = std.testing.allocator;
+    const parser = Parser.init(allocator);
+    
+    const line = "TODO: This is about the \\#backend team @alice";
+    var task = (try parser.parseLine(line)).?;
+    defer task.deinit();
+    
+    // The escaped # should be part of the description
+    try std.testing.expect(mem.indexOf(u8, task.description, "\\#backend") != null);
+    try std.testing.expectEqualStrings("alice", task.assignee.?);
+    // Should not have parsed a tag
+    try std.testing.expectEqual(@as(usize, 0), task.tags.items.len);
 }

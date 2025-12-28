@@ -46,4 +46,21 @@ pub fn build(b: *std.Build) void {
     const run_example = b.addRunArtifact(example);
     const run_example_step = b.step("run-example", "Run the example");
     run_example_step.dependOn(&run_example.step);
+
+    // Advanced example executable
+    const advanced_example = b.addExecutable(.{
+        .name = "taskspec-advanced",
+        .root_source_file = b.path("examples/advanced.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    advanced_example.root_module.addImport("taskspec", &lib.root_module);
+    
+    const install_advanced = b.addInstallArtifact(advanced_example, .{});
+    const advanced_step = b.step("advanced", "Build the advanced example");
+    advanced_step.dependOn(&install_advanced.step);
+
+    const run_advanced = b.addRunArtifact(advanced_example);
+    const run_advanced_step = b.step("run-advanced", "Run the advanced example");
+    run_advanced_step.dependOn(&run_advanced.step);
 }

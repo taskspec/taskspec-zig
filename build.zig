@@ -7,7 +7,7 @@ pub fn build(b: *std.Build) void {
     // Create the library
     const lib = b.addStaticLibrary(.{
         .name = "taskspec",
-        .root_source_file = b.path("src/taskspec.zig"),
+        .root_source_file = .{ .path = "src/taskspec.zig" },
         .target = target,
         .optimize = optimize,
     });
@@ -15,13 +15,13 @@ pub fn build(b: *std.Build) void {
 
     // Create the module for external use
     const taskspec_module = b.addModule("taskspec", .{
-        .root_source_file = b.path("src/taskspec.zig"),
+        .root_source_file = .{ .path = "src/taskspec.zig" },
     });
     _ = taskspec_module;
 
     // Unit tests
     const lib_tests = b.addTest(.{
-        .root_source_file = b.path("src/taskspec.zig"),
+        .root_source_file = .{ .path = "src/taskspec.zig" },
         .target = target,
         .optimize = optimize,
     });
@@ -33,7 +33,7 @@ pub fn build(b: *std.Build) void {
     // Example executable
     const example = b.addExecutable(.{
         .name = "taskspec-example",
-        .root_source_file = b.path("examples/basic.zig"),
+        .root_source_file = .{ .path = "examples/basic.zig" },
         .target = target,
         .optimize = optimize,
     });
@@ -50,7 +50,7 @@ pub fn build(b: *std.Build) void {
     // Advanced example executable
     const advanced_example = b.addExecutable(.{
         .name = "taskspec-advanced",
-        .root_source_file = b.path("examples/advanced.zig"),
+        .root_source_file = .{ .path = "examples/advanced.zig" },
         .target = target,
         .optimize = optimize,
     });
